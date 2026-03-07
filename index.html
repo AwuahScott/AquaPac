@@ -8,7 +8,7 @@
     />
     <title>AquaPac – Aquapac</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -36,7 +36,7 @@
         padding: 0;
       }
       body {
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
         background: var(--bg);
         color: var(--ink);
         min-height: 100vh;
@@ -70,7 +70,7 @@
         margin-bottom: 8px;
       }
       .llogo h1 {
-        font-family: "montserrat", sans-serif;
+        font-family: "Syne", sans-serif;
         font-size: 22px;
         font-weight: 800;
       }
@@ -99,10 +99,10 @@
         border: 1.5px solid var(--line);
         border-radius: 10px;
         padding: 12px 14px;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
         font-size: 15px;
         outline: none;
-        -webkit-appearance: none;
+        --webkit-appearance: none;
         transition: border 0.2s;
       }
       .lf input:focus {
@@ -116,7 +116,7 @@
         border: none;
         border-radius: 10px;
         padding: 13px;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
         font-size: 15px;
         font-weight: 700;
         cursor: pointer;
@@ -163,7 +163,7 @@
         font-size: 22px;
       }
       .logo-text {
-        font-family: "montserrat", sans-serif;
+        font-family: "Syne", sans-serif;
         font-weight: 800;
         font-size: 16px;
         color: #fff;
@@ -203,7 +203,7 @@
         cursor: pointer;
         font-size: 12px;
         font-weight: 600;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
       }
       .logbtn:hover {
         background: rgba(255, 255, 255, 0.25);
@@ -220,7 +220,7 @@
         padding: 7px 13px;
         border-radius: 8px;
         cursor: pointer;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
         font-size: 12px;
         font-weight: 500;
       }
@@ -251,7 +251,7 @@
         flex-direction: column;
         align-items: center;
         gap: 3px;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
         font-size: 10px;
         font-weight: 500;
         color: var(--muted);
@@ -281,7 +281,7 @@
         margin-bottom: 16px;
       }
       .ph h1 {
-        font-family: "montserrat", sans-serif;
+        font-family: "Syne", sans-serif;
         font-size: 21px;
         font-weight: 800;
       }
@@ -301,7 +301,7 @@
         margin-bottom: 13px;
       }
       .ct {
-        font-family: "montserrat", sans-serif;
+        font-family: "Syne", sans-serif;
         font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
@@ -340,7 +340,7 @@
         border: 1.5px solid var(--line);
         border-radius: 10px;
         padding: 11px 12px;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
         font-size: 15px;
         color: var(--ink);
         background: #fff;
@@ -421,7 +421,7 @@
         border: none;
         border-radius: 10px;
         padding: 12px 18px;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
@@ -514,7 +514,7 @@
       .en {
         flex: 2;
         min-width: 0;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
       }
       .ea {
         flex: 1;
@@ -563,7 +563,7 @@
       .r-hd td {
         background: #f8fafc;
         font-weight: 700;
-        font-family: "montserrat", sans-serif;
+        font-family: "Syne", sans-serif;
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -687,7 +687,7 @@
         cursor: pointer;
       }
       .hc-date {
-        font-family: "montserrat", sans-serif;
+        font-family: "Syne", sans-serif;
         font-weight: 700;
         font-size: 14px;
         margin-top: 4px;
@@ -755,7 +755,7 @@
         margin-bottom: 14px;
       }
       .pbar h2 {
-        font-family: "montserrat", sans-serif;
+        font-family: "Syne", sans-serif;
         font-size: 17px;
         font-weight: 800;
       }
@@ -803,7 +803,7 @@
         flex: 1;
         border: none;
         padding: 11px 8px;
-        font-family: "montserrat", sans-serif;
+        font-family: "DM Sans", sans-serif;
         font-size: 13px;
         font-weight: 600;
         cursor: pointer;
@@ -1698,7 +1698,7 @@
                     style="color: var(--blue)"
                     >Google Sheets</a
                   >
-                  new blank sheet
+                  → new blank sheet
                 </li>
                 <li>Click <strong>Extensions → Apps Script</strong></li>
                 <li>Delete all text, paste the script below</li>
@@ -1712,73 +1712,89 @@
                 <li>Copy the Web App URL and paste it below</li>
               </ol>
               <div class="codebox" id="ascode">
-                // ── AquaPac Apps Script ── // Paste this ENTIRE script. Deploy
-                as Web App, access: Anyone. // IMPORTANT: Redeploy as NEW
-                VERSION after replacing old script. function doPost(e) { try {
-                var sheet =
-                SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); var data
-                = JSON.parse(e.postData.contents); var headers = [
-                'date','salesperson','taken','takings','produced','sold',
-                'prevLeft','leakage','bossWater','price','workerRate','prodCost',
-                'gross','totalExpenses','net','prevDayNet','settlement',
-                'totalWater','leftover','expenses','savedAt' ]; // Write header
-                row if sheet is empty if (sheet.getLastRow() === 0) {
-                sheet.appendRow([ 'Date','Salesperson','Bags
+                // ── AquaPac Apps Script ── FINAL VERSION // 1. Paste ALL of
+                this into Apps Script editor // 2. Save (floppy disk icon) // 3.
+                Deploy → New deployment → Web app // Execute as: Me | Who has
+                access: Anyone // 4. Copy Web App URL → paste in app Settings //
+                NOTE: If updating existing script → Deploy → Manage deployments
+                → Edit → New Version var TAB_NAME = 'AquaPac'; function
+                getSheet() { var ss = SpreadsheetApp.getActiveSpreadsheet(); var
+                sh = ss.getSheetByName(TAB_NAME); if (!sh) sh =
+                ss.insertSheet(TAB_NAME); if (sh.getLastRow() === 0) {
+                sh.appendRow([ 'Date','Salesperson','Bags
                 Taken','Batches','Produced', 'Sold at Site','Prev
                 Leftover','Leakage','Drawings (Owner)', 'Price/Bag','Worker
                 Rate','Prod Cost','Gross (GHC)', 'Expenses (GHC)','Net
                 (GHC)','Prev Day Net', 'Settlement (Boss)','Total
-                Water','Leftover', 'Expense Details','Saved At' ]); } // Find
-                and DELETE existing row for this date (prevents duplicates) var
-                allRows = sheet.getDataRange().getValues(); for (var i = 1; i <
-                allRows.length; i++) { if (String(allRows[i][0]) ===
-                String(data.date)) { sheet.deleteRow(i + 1); break; } } //
-                Append updated row sheet.appendRow([ data.date,
-                data.salesperson, data.taken, (data.takings || []).join('+'),
-                data.produced, data.sold, data.prevLeft, data.leakage,
-                data.bossWater || 0, data.price, data.workerRate || 0.25,
-                data.prodCost || 0, data.gross, data.totalExpenses, data.net,
-                data.prevDayNet != null ? data.prevDayNet : 'N/A',
-                data.settlement != null ? data.settlement : 'Carried forward',
-                data.totalWater, data.leftover, JSON.stringify(data.expenses ||
-                []), data.savedAt ]); return ContentService
-                .createTextOutput(JSON.stringify({ status: 'ok' }))
-                .setMimeType(ContentService.MimeType.JSON); } catch (err) {
+                Water','Leftover', 'Expense Details','Saved At' ]); // Force
+                column A (Date) to plain text so it never becomes a Date object
+                sh.getRange('A:A').setNumberFormat('@STRING@'); } return sh; }
+                // Format a JS date string as YYYY-MM-DD function safeDate(val)
+                { if (!val) return ''; var s = String(val); // Already
+                YYYY-MM-DD if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s; // Try
+                to parse and reformat try { var d = new Date(s); if
+                (!isNaN(d.getTime())) { var y = d.getFullYear(); var m =
+                String(d.getMonth() + 1).padStart(2, '0'); var day =
+                String(d.getDate()).padStart(2, '0'); return y + '-' + m + '-' +
+                day; } } catch(e) {} return s; } function doPost(e) { try { var
+                sh = getSheet(); var data = JSON.parse(e.postData.contents); var
+                dateStr = safeDate(data.date); // Find and DELETE existing row
+                for this date (no duplicates) var vals =
+                sh.getDataRange().getValues(); for (var i = 1; i < vals.length;
+                i++) { var rowDate = safeDate(vals[i][0]); if (rowDate ===
+                dateStr) { sh.deleteRow(i + 1); break; } } // Append the row —
+                date is stored as plain text string sh.appendRow([ dateStr,
+                String(data.salesperson || ''), Number(data.taken) || 0,
+                (data.takings || []).join('+'), Number(data.produced) || 0,
+                Number(data.sold) || 0, Number(data.prevLeft) || 0,
+                Number(data.leakage) || 0, Number(data.bossWater) || 0,
+                Number(data.price) || 5, Number(data.workerRate) || 0.25,
+                Number(data.prodCost) || 0, Number(data.gross) || 0,
+                Number(data.totalExpenses) || 0, Number(data.net) || 0,
+                data.prevDayNet != null ? Number(data.prevDayNet) : 'N/A',
+                data.settlement != null ? Number(data.settlement) : 'Carried
+                forward', Number(data.totalWater) || 0, Number(data.leftover) ||
+                0, JSON.stringify(data.expenses || []), String(data.savedAt ||
+                new Date().toISOString()) ]); // Keep date column as text
+                sh.getRange('A:A').setNumberFormat('@STRING@'); return
+                ContentService .createTextOutput(JSON.stringify({ status: 'ok'
+                })) .setMimeType(ContentService.MimeType.JSON); } catch(err) {
                 return ContentService .createTextOutput(JSON.stringify({ status:
                 'error', msg: err.toString() }))
                 .setMimeType(ContentService.MimeType.JSON); } } function
                 doGet(e) { try { var action = (e && e.parameter &&
-                e.parameter.action) ? e.parameter.action : ''; var sheet =
-                SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); var n =
-                sheet.getLastRow() - 1; // Return all records as JSON so the app
-                can pull them on login if (action === 'getAll' && n > 0) { var
-                rows = sheet.getDataRange().getValues(); var records = []; for
-                (var i = 1; i < rows.length; i++) { var r = rows[i]; if (!r[0])
-                continue; var expRaw = r[19]; var expenses = []; try { expenses
-                = JSON.parse(expRaw); } catch(x) { expenses = []; } var
-                takingsRaw = String(r[3] || ''); var takings = takingsRaw ?
-                takingsRaw.split('+').map(Number).filter(Boolean) : [];
-                records.push({ date: String(r[0]), salesperson: String(r[1]),
-                taken: Number(r[2]) || 0, takings: takings, produced:
-                Number(r[4]) || 0, sold: Number(r[5]) || 0, prevLeft:
-                Number(r[6]) || 0, leakage: Number(r[7]) || 0, bossWater:
-                Number(r[8]) || 0, price: Number(r[9]) || 5, workerRate:
-                Number(r[10]) || 0.25, prodCost: Number(r[11]) || 0, gross:
-                Number(r[12]) || 0, totalExpenses: Number(r[13]) || 0, net:
-                Number(r[14]) || 0, prevDayNet: r[15] === 'N/A' ? null :
-                (Number(r[15]) || null), settlement: r[16] === 'Carried forward'
-                ? null : (Number(r[16]) || null), totalWater: Number(r[17]) ||
-                0, leftover: Number(r[18]) || 0, expenses: expenses,
-                prodSalesAmt: (Number(r[5])||0) * (Number(r[9])||5), savedAt:
-                String(r[20] || new Date().toISOString()) }); } return
-                ContentService .createTextOutput(JSON.stringify({ status: 'ok',
-                records: records })) .setMimeType(ContentService.MimeType.JSON);
-                } // Default: just return row count return ContentService
-                .createTextOutput(JSON.stringify({ status: 'ok', rows: n }))
-                .setMimeType(ContentService.MimeType.JSON); } catch (err) {
+                e.parameter.action) ? e.parameter.action : ''; var sh =
+                getSheet(); if (action === 'getAll') { var rows =
+                sh.getDataRange().getValues(); var out = []; for (var i = 1; i <
+                rows.length; i++) { var r = rows[i]; if (!r[0]) continue; //
+                Always format date as YYYY-MM-DD var dateStr = safeDate(r[0]);
+                if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue;
+                // skip bad rows var expenses = []; try { expenses =
+                JSON.parse(String(r[19])); } catch(x) { expenses = []; } var
+                tkRaw = String(r[3] || ''); var tkArr = tkRaw ?
+                tkRaw.split('+').map(Number).filter(Boolean) : []; out.push({
+                date: dateStr, salesperson: String(r[1] || ''), taken:
+                Number(r[2]) || 0, takings: tkArr, produced: Number(r[4]) || 0,
+                sold: Number(r[5]) || 0, prevLeft: Number(r[6]) || 0, leakage:
+                Number(r[7]) || 0, bossWater: Number(r[8]) || 0, price:
+                Number(r[9]) || 5, workerRate: Number(r[10]) || 0.25, prodCost:
+                Number(r[11]) || 0, gross: Number(r[12]) || 0, totalExpenses:
+                Number(r[13]) || 0, net: Number(r[14]) || 0, prevDayNet:
+                String(r[15]) === 'N/A' ? null : (Number(r[15]) || null),
+                settlement: String(r[16]) === 'Carried forward' ? null :
+                (Number(r[16]) || null), totalWater: Number(r[17]) || 0,
+                leftover: Number(r[18]) || 0, expenses: expenses, prodSalesAmt:
+                (Number(r[5]) || 0) * (Number(r[9]) || 5), savedAt: String(r[20]
+                || new Date().toISOString()) }); } return ContentService
+                .createTextOutput(JSON.stringify({ status: 'ok', records: out
+                })) .setMimeType(ContentService.MimeType.JSON); } // Default:
+                return row count var n = Math.max(0, sh.getLastRow() - 1);
                 return ContentService .createTextOutput(JSON.stringify({ status:
-                'error', msg: err.toString() }))
-                .setMimeType(ContentService.MimeType.JSON); } }
+                'ok', rows: n })) .setMimeType(ContentService.MimeType.JSON); }
+                catch(err) { return ContentService
+                .createTextOutput(JSON.stringify({ status: 'error', msg:
+                err.toString() })) .setMimeType(ContentService.MimeType.JSON); }
+                }
               </div>
               <button
                 class="btn btn-gray btn-sm"
@@ -2337,263 +2353,19 @@
           "</div>";
       }
 
-      // function delRec(date) {
-      //   if (currentRole !== "admin") return;
-      //   if (
-      //     !confirm(
-      //       "Delete record for " + fmtDate(date) + "?\nThis cannot be undone.",
-      //     )
-      //   )
-      //     return;
-      //   records = records.filter((r) => r.date !== date);
-      //   persist();
-      //   fillDays();
-      //   renderHist();
-      // }
-
-      // Replace your existing delRec function with this:
-      async function delRec(date) {
+      function delRec(date) {
         if (currentRole !== "admin") return;
         if (
           !confirm(
-            "Delete record for " +
-              fmtDate(date) +
-              "?\nThis will remove it from ALL devices.",
+            "Delete record for " + fmtDate(date) + "?\nThis cannot be undone.",
           )
         )
           return;
-
-        // Delete from Google Sheets first
-        const url = localStorage.getItem("aq_shurl");
-        if (url) {
-          try {
-            const res = await fetch(url + "?date=" + encodeURIComponent(date), {
-              method: "DELETE",
-            });
-            const data = await res.json();
-            if (data.status === "ok") {
-              console.log("Deleted from cloud:", data);
-            }
-          } catch (e) {
-            console.error("Error deleting from cloud:", e);
-            alert("⚠️ Could not delete from cloud. Check your connection.");
-            return;
-          }
-        }
-
-        // Then delete locally
         records = records.filter((r) => r.date !== date);
         persist();
         fillDays();
         renderHist();
-
-        // Pull fresh data from cloud to ensure sync
-        setTimeout(() => pullFromSheets(false), 500);
-
-        showA("✅ Record deleted from all devices", "ok");
       }
-
-      // Update your pullFromSheets function to ALWAYS use cloud data:
-      async function pullFromSheets(silent) {
-        const url = localStorage.getItem("aq_shurl");
-        if (!url) {
-          if (!silent) alert("⚠️ No Google Sheets URL configured in Settings");
-          return;
-        }
-
-        const banner = document.getElementById("sync-banner");
-        if (banner) {
-          banner.style.display = "flex";
-          banner.textContent = "☁️ Syncing data from cloud…";
-        }
-
-        try {
-          const res = await fetch(url + "?action=getAll");
-          const data = await res.json();
-
-          if (data.status === "ok" && Array.isArray(data.records)) {
-            // IMPORTANT: Replace ALL local records with cloud data
-            // This ensures every device has the EXACT same data
-            records = data.records;
-            persist(); // Save to localStorage as backup only
-
-            // Update UI
-            fillDays();
-            autofillPrevNet();
-
-            if (banner) {
-              banner.textContent =
-                "✅ Synced " + data.records.length + " records from cloud";
-              setTimeout(() => (banner.style.display = "none"), 3000);
-            }
-
-            if (!silent) {
-              showA("✅ Data synced from cloud", "ok");
-            }
-
-            // Refresh current page if needed
-            if (
-              document
-                .getElementById("page-history")
-                .classList.contains("active")
-            ) {
-              renderHist();
-            }
-          } else {
-            if (banner) {
-              banner.textContent = "⚠️ No records in cloud yet";
-              setTimeout(() => (banner.style.display = "none"), 3000);
-            }
-          }
-        } catch (e) {
-          console.error("Sync error:", e);
-          if (banner) {
-            banner.textContent = "⚠️ Could not reach cloud - using local data";
-            setTimeout(() => (banner.style.display = "none"), 3000);
-          }
-        }
-      }
-
-      // Update your saveRec function to sync after saving:
-      async function saveRec() {
-        const date = document.getElementById("e-date").value;
-        const person = document.getElementById("e-person").value.trim();
-        if (!date) {
-          showA("⚠️ Please select a date.", "warn");
-          return;
-        }
-        if (!person) {
-          showA("⚠️ Please enter the salesperson name.", "warn");
-          return;
-        }
-        if (!takings.length) {
-          showA("⚠️ Add at least one batch of bags taken.", "warn");
-          return;
-        }
-
-        const taken = takings.reduce((a, b) => a + b, 0);
-        const prod = g("e-prod"),
-          sold = g("e-sold"),
-          prev = g("e-prev");
-        const leak = g("e-leak"),
-          boss = g("e-boss");
-        const price = g("e-price") || 5;
-        const prate = g("e-prate") || 0.25;
-        const exps = getExps();
-        const totExp = exps.reduce((a, e) => a + e.amount, 0);
-        const gross = taken * price;
-        const net = gross - totExp;
-        const totW = prev + prod;
-        const left = totW - taken - sold - leak - boss;
-        const prodCost = prod * prate;
-
-        const prevNetEl = document.getElementById("e-prevnet");
-        const hasPrev = prevNetEl.dataset.hasPrev === "true";
-        const prevNet = hasPrev ? parseFloat(prevNetEl.value) || 0 : null;
-        const settlement = hasPrev ? prevNet - prodCost : null;
-
-        const rec = {
-          date,
-          salesperson: person,
-          takings: [...takings],
-          taken,
-          produced: prod,
-          sold,
-          prevLeft: prev,
-          leakage: leak,
-          bossWater: boss,
-          price,
-          workerRate: prate,
-          prodCost,
-          prevDayNet: prevNet,
-          settlement,
-          expenses: exps,
-          totalExpenses: totExp,
-          gross,
-          net,
-          totalWater: totW,
-          leftover: left,
-          prodSalesAmt: sold * price,
-          savedAt: new Date().toISOString(),
-        };
-
-        // Save to cloud FIRST
-        const url = localStorage.getItem("aq_shurl");
-        if (url) {
-          try {
-            const res = await fetch(url, {
-              method: "POST",
-              body: JSON.stringify(rec),
-              headers: { "Content-Type": "text/plain" },
-            });
-            const data = await res.json();
-            if (data.status === "ok") {
-              console.log("Saved to cloud:", data);
-            } else {
-              throw new Error(data.msg || "Unknown error");
-            }
-          } catch (e) {
-            alert("⚠️ Could not save to cloud: " + e.message);
-            return;
-          }
-        } else {
-          alert(
-            "⚠️ No Google Sheets URL configured. Please set it in Settings first.",
-          );
-          return;
-        }
-
-        // Then update local records and pull fresh data
-        records = records.filter((r) => r.date !== date);
-        records.push(rec);
-        records.sort((a, b) => b.date.localeCompare(a.date));
-        persist();
-        fillDays();
-        showA("✅ Record saved to cloud!", "ok");
-
-        // Prompt to open boss report for previous day
-        const sorted = [...records].sort((a, b) =>
-          b.date.localeCompare(a.date),
-        );
-        const prevRec = sorted.find((r) => r.date < date);
-        if (prevRec) {
-          setTimeout(() => {
-            if (
-              confirm(
-                "✅ Record saved!\n\n📤 Ready to submit to boss?\nGenerate the boss report for " +
-                  fmtDate(prevRec.date) +
-                  "?",
-              )
-            ) {
-              openBossRep(prevRec.date);
-            }
-          }, 300);
-        }
-      }
-
-      // Add a manual sync button to history page
-      function addSyncButton() {
-        const historyHeader = document.querySelector("#page-history .ph");
-        if (historyHeader && !document.getElementById("sync-history-btn")) {
-          const syncBtn = document.createElement("button");
-          syncBtn.id = "sync-history-btn";
-          syncBtn.className = "btn btn-teal btn-sm";
-          syncBtn.style.marginLeft = "10px";
-          syncBtn.innerHTML = "🔄 Sync";
-          syncBtn.onclick = () => pullFromSheets(false);
-          historyHeader.querySelector("h1").after(syncBtn);
-        }
-      }
-
-      // Call this when showing history page
-      const originalShowPage = showPage;
-      showPage = function (name) {
-        originalShowPage(name);
-        if (name === "history") {
-          renderHist();
-          addSyncButton();
-        }
-      };
 
       function loadEdit(date) {
         if (currentRole !== "admin") return;
@@ -2718,7 +2490,7 @@
         return `
   <div class="card" style="margin-bottom:14px">
     <div class="pbar" style="background:linear-gradient(135deg,#0c4a6e,#0369a1)">
-      <h2>Daily Sales Report</h2>
+      <h2>📤 Boss Settlement Report</h2>
       <p>${fmtDate(r.date)} sales &nbsp;·&nbsp; Submitted: ${new Date().toLocaleString()}</p>
     </div>
 
@@ -3043,19 +2815,28 @@
             Array.isArray(data.records) &&
             data.records.length > 0
           ) {
-            // Merge: cloud wins for any date that exists in cloud
-            data.records.forEach((r) => {
-              records = records.filter((x) => x.date !== r.date);
-              records.push(r);
-            });
-            records.sort((a, b) => b.date.localeCompare(a.date));
-            persist();
-            fillDays();
-            autofillPrevNet();
-            if (banner) {
-              banner.textContent =
-                "✅ Synced " + data.records.length + " records from cloud";
-              setTimeout(() => (banner.style.display = "none"), 3000);
+            // Validate dates before accepting — filter out any bad records
+            const valid = data.records.filter(
+              (r) => r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date),
+            );
+            if (valid.length > 0) {
+              // REPLACE local storage with cloud (cloud is the source of truth)
+              records = valid;
+              records.sort((a, b) => b.date.localeCompare(a.date));
+              persist();
+              fillDays();
+              autofillPrevNet();
+              if (banner) {
+                banner.textContent =
+                  "✅ Synced " + valid.length + " records from cloud";
+                setTimeout(() => (banner.style.display = "none"), 3000);
+              }
+            } else {
+              if (banner) {
+                banner.textContent =
+                  "⚠️ Cloud records had invalid dates — keeping local data";
+                setTimeout(() => (banner.style.display = "none"), 3000);
+              }
             }
           } else {
             if (banner) {
@@ -3387,12 +3168,18 @@
         return new Date().toISOString().split("T")[0];
       }
       function fmtDate(s) {
-        return new Date(s + "T12:00:00").toLocaleDateString("en-GH", {
-          weekday: "short",
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
+        try {
+          if (!s || typeof s !== "string") return "Unknown Date";
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return "Invalid Date";
+          return new Date(s + "T12:00:00").toLocaleDateString("en-GH", {
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        } catch (e) {
+          return s;
+        }
       }
 
       // Boot
