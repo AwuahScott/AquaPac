@@ -1743,18 +1743,19 @@
                 var action = e.parameter && e.parameter.action ?
                 e.parameter.action : ''; // Handle stock transactions if (action
                 === 'stock') { var sh = getStockSheet(); var allRows =
-                sh.getDataRange().getValues(); // Delete existing if same ID for
-                (var i = 1; i < allRows.length; i++) { if (String(allRows[i][0])
-                === String(data.id)) { sh.deleteRow(i + 1); break; } }
-                sh.appendRow([ data.id || '', data.date || '', data.item || '',
-                data.qty || 0, data.type || '', data.note || '', data.savedAt ||
-                new Date().toISOString() ]); return ContentService
-                .createTextOutput(JSON.stringify({ status: 'ok' }))
+                sh.getDataRange().getValues(); // Delete existing if same ID
+                (update) for (var i = allRows.length - 1; i >= 1; i--) { if
+                (String(allRows[i][0]) === String(data.id)) { sh.deleteRow(i +
+                1); break; } } sh.appendRow([ String(data.id || ''), data.date
+                || '', data.item || '', Number(data.qty) || 0, data.type || '',
+                data.note || '', data.savedAt || new Date().toISOString() ]);
+                return ContentService .createTextOutput(JSON.stringify({ status:
+                'ok', message: 'Stock saved' }))
                 .setMimeType(ContentService.MimeType.JSON); } // Handle
                 production records var sh = getSheet(); var dateStr =
                 safeDate(data.date); // Delete existing rows for this date var
-                vals = sh.getDataRange().getValues(); for (var i = 1; i <
-                vals.length; i++) { var rowDate = safeDate(vals[i][0]); if
+                vals = sh.getDataRange().getValues(); for (var i = vals.length -
+                1; i >= 1; i--) { var rowDate = safeDate(vals[i][0]); if
                 (rowDate === dateStr) { sh.deleteRow(i + 1); break; } }
                 sh.appendRow([ dateStr, String(data.salesperson || ''),
                 Number(data.taken) || 0, (data.takings || []).join('+'),
@@ -1770,8 +1771,9 @@
                 JSON.stringify(data.expenses || []), String(data.savedAt || new
                 Date().toISOString()) ]);
                 sh.getRange('A:A').setNumberFormat('@STRING@'); return
-                ContentService .createTextOutput(JSON.stringify({ status: 'ok'
-                })) .setMimeType(ContentService.MimeType.JSON); } catch(err) {
+                ContentService .createTextOutput(JSON.stringify({ status: 'ok',
+                message: 'Record saved' }))
+                .setMimeType(ContentService.MimeType.JSON); } catch(err) {
                 return ContentService .createTextOutput(JSON.stringify({ status:
                 'error', msg: err.toString() }))
                 .setMimeType(ContentService.MimeType.JSON); } } function
@@ -1823,22 +1825,32 @@
                 doDelete(e) { try { var action = e.parameter &&
                 e.parameter.action ? e.parameter.action : ''; var date =
                 e.parameter && e.parameter.date; var id = e.parameter &&
-                e.parameter.id; // Delete stock transaction if (action ===
-                'stock' && id) { var sh = getStockSheet(); var rows =
-                sh.getDataRange().getValues(); for (var i = rows.length - 1; i
-                >= 1; i--) { if (String(rows[i][0]) === String(id)) {
-                sh.deleteRow(i + 1); break; } } return ContentService
-                .createTextOutput(JSON.stringify({ status: 'ok' }))
-                .setMimeType(ContentService.MimeType.JSON); } // Delete
+                e.parameter.id; Logger.log('Delete request - action: ' + action
+                + ', id: ' + id + ', date: ' + date); // Delete stock
+                transaction if (action === 'stock' && id) { var sh =
+                getStockSheet(); var rows = sh.getDataRange().getValues(); var
+                deleted = false; for (var i = rows.length - 1; i >= 1; i--) { if
+                (String(rows[i][0]) === String(id)) { sh.deleteRow(i + 1);
+                deleted = true; break; } } if (deleted) { return ContentService
+                .createTextOutput(JSON.stringify({ status: 'ok', message: 'Stock
+                transaction deleted' }))
+                .setMimeType(ContentService.MimeType.JSON); } else { return
+                ContentService .createTextOutput(JSON.stringify({ status:
+                'error', msg: 'Stock transaction not found' }))
+                .setMimeType(ContentService.MimeType.JSON); } } // Delete
                 production record if (date) { var sh = getSheet(); var rows =
-                sh.getDataRange().getValues(); var deleted = 0; for (var i =
+                sh.getDataRange().getValues(); var deleted = false; for (var i =
                 rows.length - 1; i >= 1; i--) { var rowDate =
                 safeDate(rows[i][0]); if (rowDate === date) { sh.deleteRow(i +
-                1); deleted++; break; } } return ContentService
-                .createTextOutput(JSON.stringify({ status: 'ok', message:
-                'Deleted ' + deleted + ' records' }))
-                .setMimeType(ContentService.MimeType.JSON); } throw new
-                Error('No identifier provided'); } catch(err) { return
+                1); deleted = true; break; } } if (deleted) { return
+                ContentService .createTextOutput(JSON.stringify({ status: 'ok',
+                message: 'Record deleted' }))
+                .setMimeType(ContentService.MimeType.JSON); } else { return
+                ContentService .createTextOutput(JSON.stringify({ status:
+                'error', msg: 'Record not found' }))
+                .setMimeType(ContentService.MimeType.JSON); } } throw new
+                Error('No identifier provided'); } catch(err) {
+                Logger.log('Delete error: ' + err.toString()); return
                 ContentService .createTextOutput(JSON.stringify({ status:
                 'error', msg: err.toString() }))
                 .setMimeType(ContentService.MimeType.JSON); } }
@@ -3271,7 +3283,6 @@
         stockPage = 1;
         renderInventory();
       }
-
       async function invDelete(id) {
         if (currentRole !== "admin") return;
         if (
@@ -3281,27 +3292,84 @@
         )
           return;
 
-        // Delete from cloud
         const url = localStorage.getItem("aq_shurl");
-        if (url) {
-          try {
+
+        // Show loading state
+        const deleteBtn = event?.target;
+        const originalText = deleteBtn?.textContent;
+        if (deleteBtn) {
+          deleteBtn.textContent = "⏳ Deleting...";
+          deleteBtn.disabled = true;
+        }
+
+        try {
+          // Delete from cloud first
+          if (url) {
             const res = await fetch(url + "?action=stock&id=" + id, {
               method: "DELETE",
+              headers: { "Content-Type": "text/plain" },
             });
+
             const data = await res.json();
+
             if (data.status !== "ok") {
               throw new Error(data.msg || "Failed to delete from cloud");
             }
-          } catch (e) {
-            alert("⚠️ Could not delete from cloud: " + e.message);
-            return;
+          }
+
+          // Then delete locally
+          const txs = getInv().filter((t) => t.id !== id);
+          saveInv(txs);
+
+          // Refresh the view
+          renderInventory();
+          showA("✅ Stock transaction deleted from all devices", "ok");
+        } catch (e) {
+          console.error("Delete error:", e);
+          alert(
+            "❌ Could not delete from cloud: " +
+              e.message +
+              "\n\nPlease check your internet connection and try again.",
+          );
+        } finally {
+          // Restore button state
+          if (deleteBtn) {
+            deleteBtn.textContent = originalText;
+            deleteBtn.disabled = false;
           }
         }
-
-        // Then delete locally
-        saveInv(getInv().filter((t) => t.id !== id));
-        renderInventory();
       }
+
+      // async function invDelete(id) {
+      //   if (currentRole !== "admin") return;
+      //   if (
+      //     !confirm(
+      //       "Delete this transaction? This will remove it from ALL devices.",
+      //     )
+      //   )
+      //     return;
+
+      //   // Delete from cloud
+      //   const url = localStorage.getItem("aq_shurl");
+      //   if (url) {
+      //     try {
+      //       const res = await fetch(url + "?action=stock&id=" + id, {
+      //         method: "DELETE",
+      //       });
+      //       const data = await res.json();
+      //       if (data.status !== "ok") {
+      //         throw new Error(data.msg || "Failed to delete from cloud");
+      //       }
+      //     } catch (e) {
+      //       alert("⚠️ Could not delete from cloud: " + e.message);
+      //       return;
+      //     }
+      //   }
+
+      //   // Then delete locally
+      //   saveInv(getInv().filter((t) => t.id !== id));
+      //   renderInventory();
+      // }
 
       async function pullStockFromSheets(silent) {
         const url = localStorage.getItem("aq_shurl");
