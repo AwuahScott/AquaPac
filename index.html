@@ -1712,12 +1712,10 @@
                 <li>Copy the Web App URL and paste it below</li>
               </ol>
               <div class="codebox" id="ascode">
-                // ── AquaPac Apps Script ── FINAL VERSION // 1. Paste ALL of
-                this into Apps Script editor // 2. Save (floppy disk icon) // 3.
-                Deploy → New deployment → Web app // Execute as: Me | Who has
-                access: Anyone // 4. Copy Web App URL → paste in app Settings //
-                NOTE: If updating existing script → Deploy → Manage deployments
-                → Edit → New Version var TAB_NAME = 'AquaPac'; function
+                // ── AquaPac Apps Script ── FINAL VERSION WITH STOCK SYNC //
+                Paste ALL of this into Apps Script editor // Save → Deploy → New
+                deployment → Web app // Execute as: Me | Who has access: Anyone
+                var TAB_NAME = 'AquaPac'; var STOCK_TAB_NAME = 'Stock'; function
                 getSheet() { var ss = SpreadsheetApp.getActiveSpreadsheet(); var
                 sh = ss.getSheetByName(TAB_NAME); if (!sh) sh =
                 ss.insertSheet(TAB_NAME); if (sh.getLastRow() === 0) {
@@ -1726,36 +1724,51 @@
                 Leftover','Leakage','Drawings (Owner)', 'Price/Bag','Worker
                 Rate','Prod Cost','Gross (GHC)', 'Expenses (GHC)','Net
                 (GHC)','Prev Day Net', 'Settlement (Boss)','Total
-                Water','Leftover', 'Expense Details','Saved At' ]); // Force
-                column A (Date) to plain text so it never becomes a Date object
+                Water','Leftover', 'Expense Details','Saved At' ]);
                 sh.getRange('A:A').setNumberFormat('@STRING@'); } return sh; }
-                // Format a JS date string as YYYY-MM-DD function safeDate(val)
-                { if (!val) return ''; var s = String(val); // Already
-                YYYY-MM-DD if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s; // Try
-                to parse and reformat try { var d = new Date(s); if
-                (!isNaN(d.getTime())) { var y = d.getFullYear(); var m =
-                String(d.getMonth() + 1).padStart(2, '0'); var day =
-                String(d.getDate()).padStart(2, '0'); return y + '-' + m + '-' +
-                day; } } catch(e) {} return s; } function doPost(e) { try { var
-                sh = getSheet(); var data = JSON.parse(e.postData.contents); var
-                dateStr = safeDate(data.date); // Find and DELETE existing row
-                for this date (no duplicates) var vals =
-                sh.getDataRange().getValues(); for (var i = 1; i < vals.length;
-                i++) { var rowDate = safeDate(vals[i][0]); if (rowDate ===
-                dateStr) { sh.deleteRow(i + 1); break; } } // Append the row —
-                date is stored as plain text string sh.appendRow([ dateStr,
-                String(data.salesperson || ''), Number(data.taken) || 0,
-                (data.takings || []).join('+'), Number(data.produced) || 0,
-                Number(data.sold) || 0, Number(data.prevLeft) || 0,
-                Number(data.leakage) || 0, Number(data.bossWater) || 0,
-                Number(data.price) || 5, Number(data.workerRate) || 0.25,
-                Number(data.prodCost) || 0, Number(data.gross) || 0,
-                Number(data.totalExpenses) || 0, Number(data.net) || 0,
-                data.prevDayNet != null ? Number(data.prevDayNet) : 'N/A',
-                data.settlement != null ? Number(data.settlement) : 'Carried
-                forward', Number(data.totalWater) || 0, Number(data.leftover) ||
-                0, JSON.stringify(data.expenses || []), String(data.savedAt ||
-                new Date().toISOString()) ]); // Keep date column as text
+                function getStockSheet() { var ss =
+                SpreadsheetApp.getActiveSpreadsheet(); var sh =
+                ss.getSheetByName(STOCK_TAB_NAME); if (!sh) sh =
+                ss.insertSheet(STOCK_TAB_NAME); if (sh.getLastRow() === 0) {
+                sh.appendRow([
+                'ID','Date','Item','Quantity','Type','Note','Saved At' ]);
+                sh.getRange('A:A').setNumberFormat('@STRING@'); } return sh; }
+                function safeDate(val) { if (!val) return ''; var s =
+                String(val); if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s; try {
+                var d = new Date(s); if (!isNaN(d.getTime())) { var y =
+                d.getFullYear(); var m = String(d.getMonth() + 1).padStart(2,
+                '0'); var day = String(d.getDate()).padStart(2, '0'); return y +
+                '-' + m + '-' + day; } } catch(e) {} return s; } function
+                doPost(e) { try { var data = JSON.parse(e.postData.contents);
+                var action = e.parameter && e.parameter.action ?
+                e.parameter.action : ''; // Handle stock transactions if (action
+                === 'stock') { var sh = getStockSheet(); var allRows =
+                sh.getDataRange().getValues(); // Delete existing if same ID for
+                (var i = 1; i < allRows.length; i++) { if (String(allRows[i][0])
+                === String(data.id)) { sh.deleteRow(i + 1); break; } }
+                sh.appendRow([ data.id || '', data.date || '', data.item || '',
+                data.qty || 0, data.type || '', data.note || '', data.savedAt ||
+                new Date().toISOString() ]); return ContentService
+                .createTextOutput(JSON.stringify({ status: 'ok' }))
+                .setMimeType(ContentService.MimeType.JSON); } // Handle
+                production records var sh = getSheet(); var dateStr =
+                safeDate(data.date); // Delete existing rows for this date var
+                vals = sh.getDataRange().getValues(); for (var i = 1; i <
+                vals.length; i++) { var rowDate = safeDate(vals[i][0]); if
+                (rowDate === dateStr) { sh.deleteRow(i + 1); break; } }
+                sh.appendRow([ dateStr, String(data.salesperson || ''),
+                Number(data.taken) || 0, (data.takings || []).join('+'),
+                Number(data.produced) || 0, Number(data.sold) || 0,
+                Number(data.prevLeft) || 0, Number(data.leakage) || 0,
+                Number(data.bossWater) || 0, Number(data.price) || 5,
+                Number(data.workerRate) || 0.25, Number(data.prodCost) || 0,
+                Number(data.gross) || 0, Number(data.totalExpenses) || 0,
+                Number(data.net) || 0, data.prevDayNet != null ?
+                Number(data.prevDayNet) : 'N/A', data.settlement != null ?
+                Number(data.settlement) : 'Carried forward',
+                Number(data.totalWater) || 0, Number(data.leftover) || 0,
+                JSON.stringify(data.expenses || []), String(data.savedAt || new
+                Date().toISOString()) ]);
                 sh.getRange('A:A').setNumberFormat('@STRING@'); return
                 ContentService .createTextOutput(JSON.stringify({ status: 'ok'
                 })) .setMimeType(ContentService.MimeType.JSON); } catch(err) {
@@ -1763,16 +1776,28 @@
                 'error', msg: err.toString() }))
                 .setMimeType(ContentService.MimeType.JSON); } } function
                 doGet(e) { try { var action = (e && e.parameter &&
-                e.parameter.action) ? e.parameter.action : ''; var sh =
-                getSheet(); if (action === 'getAll') { var rows =
-                sh.getDataRange().getValues(); var out = []; for (var i = 1; i <
-                rows.length; i++) { var r = rows[i]; if (!r[0]) continue; //
-                Always format date as YYYY-MM-DD var dateStr = safeDate(r[0]);
-                if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue;
-                // skip bad rows var expenses = []; try { expenses =
-                JSON.parse(String(r[19])); } catch(x) { expenses = []; } var
-                tkRaw = String(r[3] || ''); var tkArr = tkRaw ?
-                tkRaw.split('+').map(Number).filter(Boolean) : []; out.push({
+                e.parameter.action) ? e.parameter.action : ''; // Get all stock
+                transactions if (action === 'getStock') { var sh =
+                getStockSheet(); var rows = sh.getDataRange().getValues(); var
+                stock = []; for (var i = 1; i < rows.length; i++) { var r =
+                rows[i]; if (!r[0]) continue; stock.push({ id: String(r[0] ||
+                ''), date: String(r[1] || ''), item: String(r[2] || ''), qty:
+                Number(r[3]) || 0, type: String(r[4] || ''), note: String(r[5]
+                || ''), savedAt: String(r[6] || new Date().toISOString()) }); }
+                return ContentService .createTextOutput(JSON.stringify({ status:
+                'ok', stock: stock }))
+                .setMimeType(ContentService.MimeType.JSON); } // Get all
+                production records if (action === 'getAll') { var sh =
+                getSheet(); var rows = sh.getDataRange().getValues(); var out =
+                []; var seenDates = {}; for (var i = rows.length - 1; i >= 1;
+                i--) { var r = rows[i]; if (!r[0]) continue; var dateStr =
+                safeDate(r[0]); if (!dateStr ||
+                !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue; if
+                (seenDates[dateStr]) continue; seenDates[dateStr] = true; var
+                expenses = []; try { expenses = JSON.parse(String(r[19] ||
+                '[]')); } catch(x) { expenses = []; } var tkRaw = String(r[3] ||
+                ''); var tkArr = tkRaw ?
+                tkRaw.split('+').map(Number).filter(Boolean) : []; out.unshift({
                 date: dateStr, salesperson: String(r[1] || ''), taken:
                 Number(r[2]) || 0, takings: tkArr, produced: Number(r[4]) || 0,
                 sold: Number(r[5]) || 0, prevLeft: Number(r[6]) || 0, leakage:
@@ -1788,13 +1813,35 @@
                 || new Date().toISOString()) }); } return ContentService
                 .createTextOutput(JSON.stringify({ status: 'ok', records: out
                 })) .setMimeType(ContentService.MimeType.JSON); } // Default:
-                return row count var n = Math.max(0, sh.getLastRow() - 1);
+                return row count var sh = getSheet(); var n = Math.max(0,
+                sh.getLastRow() - 1); return ContentService
+                .createTextOutput(JSON.stringify({ status: 'ok', rows: n }))
+                .setMimeType(ContentService.MimeType.JSON); } catch(err) {
                 return ContentService .createTextOutput(JSON.stringify({ status:
-                'ok', rows: n })) .setMimeType(ContentService.MimeType.JSON); }
-                catch(err) { return ContentService
-                .createTextOutput(JSON.stringify({ status: 'error', msg:
-                err.toString() })) .setMimeType(ContentService.MimeType.JSON); }
-                }
+                'error', msg: err.toString() }))
+                .setMimeType(ContentService.MimeType.JSON); } } function
+                doDelete(e) { try { var action = e.parameter &&
+                e.parameter.action ? e.parameter.action : ''; var date =
+                e.parameter && e.parameter.date; var id = e.parameter &&
+                e.parameter.id; // Delete stock transaction if (action ===
+                'stock' && id) { var sh = getStockSheet(); var rows =
+                sh.getDataRange().getValues(); for (var i = rows.length - 1; i
+                >= 1; i--) { if (String(rows[i][0]) === String(id)) {
+                sh.deleteRow(i + 1); break; } } return ContentService
+                .createTextOutput(JSON.stringify({ status: 'ok' }))
+                .setMimeType(ContentService.MimeType.JSON); } // Delete
+                production record if (date) { var sh = getSheet(); var rows =
+                sh.getDataRange().getValues(); var deleted = 0; for (var i =
+                rows.length - 1; i >= 1; i--) { var rowDate =
+                safeDate(rows[i][0]); if (rowDate === date) { sh.deleteRow(i +
+                1); deleted++; break; } } return ContentService
+                .createTextOutput(JSON.stringify({ status: 'ok', message:
+                'Deleted ' + deleted + ' records' }))
+                .setMimeType(ContentService.MimeType.JSON); } throw new
+                Error('No identifier provided'); } catch(err) { return
+                ContentService .createTextOutput(JSON.stringify({ status:
+                'error', msg: err.toString() }))
+                .setMimeType(ContentService.MimeType.JSON); } }
               </div>
               <button
                 class="btn btn-gray btn-sm"
@@ -1885,6 +1932,13 @@
       let takings = [];
       let records = [];
 
+      // Pagination variables
+      let historyPage = 1;
+      const HISTORY_PER_PAGE = 5;
+
+      let stockPage = 1;
+      const STOCK_PER_PAGE = 10;
+
       try {
         records = JSON.parse(localStorage.getItem("aq_recs") || "[]");
       } catch (e) {
@@ -1934,8 +1988,10 @@
         autofillPrevNet();
         calc();
         fillDays();
-        // Auto-pull from Google Sheets on every login so all devices stay in sync
+        // Pull from Google Sheets on login
         pullFromSheets(true);
+        // Pull stock from Google Sheets
+        pullStockFromSheets(true);
       }
 
       function doLogout() {
@@ -1988,12 +2044,18 @@
           .forEach((b, i) =>
             b.classList.toggle("active", PAGE_ORDER[i] === name),
           );
-        if (name === "history") renderHist();
+        if (name === "history") {
+          historyPage = 1;
+          renderHist();
+        }
         if (name === "report") {
           fillDays();
           autofillBossCost();
         }
-        if (name === "inventory") renderInventory();
+        if (name === "inventory") {
+          stockPage = 1;
+          renderInventory();
+        }
         if (name === "settings") renderSettings();
       }
 
@@ -2182,7 +2244,7 @@
       // ══════════════════════════════════════════════
       //  SAVE RECORD
       // ══════════════════════════════════════════════
-      function saveRec() {
+      async function saveRec() {
         const date = document.getElementById("e-date").value;
         const person = document.getElementById("e-person").value.trim();
         if (!date) {
@@ -2244,21 +2306,35 @@
           savedAt: new Date().toISOString(),
         };
 
+        // Save to Google Sheets first
+        const url = localStorage.getItem("aq_shurl");
+        if (url) {
+          try {
+            const res = await fetch(url, {
+              method: "POST",
+              body: JSON.stringify(rec),
+              headers: { "Content-Type": "text/plain" },
+            });
+            const data = await res.json();
+            if (data.status !== "ok") {
+              throw new Error(data.msg || "Failed to save to cloud");
+            }
+          } catch (e) {
+            showA("⚠️ Could not save to cloud: " + e.message, "warn");
+            return;
+          }
+        } else {
+          showA("⚠️ No Google Sheets URL configured in Settings", "warn");
+          return;
+        }
+
+        // Then update local records
         records = records.filter((r) => r.date !== date);
         records.push(rec);
         records.sort((a, b) => b.date.localeCompare(a.date));
         persist();
         fillDays();
-        showA("✅ Record saved!", "ok");
-
-        // Google Sheets sync
-        const url = localStorage.getItem("aq_shurl");
-        if (url)
-          fetch(url, {
-            method: "POST",
-            body: JSON.stringify(rec),
-            headers: { "Content-Type": "text/plain" },
-          }).catch(() => {});
+        showA("✅ Record saved to cloud!", "ok");
 
         // Prompt to open boss report for previous day
         const sorted = [...records].sort((a, b) =>
@@ -2309,7 +2385,7 @@
       }
 
       // ══════════════════════════════════════════════
-      //  HISTORY
+      //  HISTORY WITH PAGINATION
       // ══════════════════════════════════════════════
       function renderHist() {
         const c = document.getElementById("hc");
@@ -2318,16 +2394,22 @@
             '<div class="empty"><div class="ei">📭</div><p>No records yet.<br>Add today\'s entry first!</p></div>';
           return;
         }
+
         const isAdmin = currentRole === "admin";
-        c.innerHTML =
-          '<div class="hlist">' +
-          records
-            .map(
-              (r, i) => `
+        const totalPages = Math.ceil(records.length / HISTORY_PER_PAGE);
+        const start = (historyPage - 1) * HISTORY_PER_PAGE;
+        const end = start + HISTORY_PER_PAGE;
+        const pageRecords = records.slice(start, end);
+
+        let html = '<div class="hlist">';
+
+        pageRecords.forEach((r, i) => {
+          const actualIndex = start + i + 1;
+          html += `
     <div class="hcard">
       <div class="hc-top" onclick="openRep('${r.date}')">
         <div>
-          <span class="badge">#${records.length - i}</span>
+          <span class="badge">#${records.length - start - i}</span>
           <div class="hc-date">${fmtDate(r.date)}</div>
         </div>
         <div class="hc-net">GH₵ ${r.net.toFixed(2)}</div>
@@ -2347,24 +2429,86 @@
         <button class="btn btn-blue btn-sm" onclick="openRep('${r.date}')">📄 Report</button>
         <button class="btn btn-teal btn-sm" onclick="openBossRep('${r.date}')" style="margin-left:auto">📤 Boss</button>
       </div>
-    </div>`,
-            )
-            .join("") +
-          "</div>";
+    </div>`;
+        });
+
+        html += "</div>";
+
+        // Add pagination controls
+        if (totalPages > 1) {
+          html += `
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:16px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-gray" onclick="changeHistPage(${historyPage - 1})" ${historyPage === 1 ? "disabled" : ""}>← Prev</button>
+      <span style="display:flex;align-items:center;gap:4px;background:var(--card);padding:0 8px;border-radius:8px;border:1px solid var(--line)">`;
+
+          // Show page numbers
+          for (let i = 1; i <= totalPages; i++) {
+            if (i === historyPage) {
+              html += `<span style="background:var(--blue);color:#fff;padding:4px 10px;border-radius:6px;font-size:13px;font-weight:600">${i}</span>`;
+            } else {
+              html += `<span onclick="changeHistPage(${i})" style="cursor:pointer;padding:4px 10px;border-radius:6px;font-size:13px;background:var(--bg);color:var(--slate)">${i}</span>`;
+            }
+          }
+
+          html += `</span>
+      <button class="btn btn-sm btn-gray" onclick="changeHistPage(${historyPage + 1})" ${historyPage === totalPages ? "disabled" : ""}>Next →</button>
+    </div>`;
+        }
+
+        c.innerHTML = html;
       }
 
-      function delRec(date) {
+      function changeHistPage(newPage) {
+        const totalPages = Math.ceil(records.length / HISTORY_PER_PAGE);
+        if (newPage < 1 || newPage > totalPages) return;
+        historyPage = newPage;
+        renderHist();
+      }
+
+      async function delRec(date) {
         if (currentRole !== "admin") return;
         if (
           !confirm(
-            "Delete record for " + fmtDate(date) + "?\nThis cannot be undone.",
+            "Delete record for " +
+              fmtDate(date) +
+              "?\nThis will remove it from ALL devices.",
           )
         )
           return;
+
+        // Delete from Google Sheets
+        const url = localStorage.getItem("aq_shurl");
+        if (url) {
+          try {
+            const res = await fetch(
+              url + "?action=delete&date=" + encodeURIComponent(date),
+              {
+                method: "DELETE",
+              },
+            );
+            const data = await res.json();
+            if (data.status !== "ok") {
+              throw new Error(data.msg || "Failed to delete from cloud");
+            }
+          } catch (e) {
+            alert("⚠️ Could not delete from cloud: " + e.message);
+            return;
+          }
+        }
+
+        // Then delete locally
         records = records.filter((r) => r.date !== date);
         persist();
         fillDays();
+
+        // Adjust page if needed
+        const totalPages = Math.ceil(records.length / HISTORY_PER_PAGE);
+        if (historyPage > totalPages && totalPages > 0) {
+          historyPage = totalPages;
+        }
+
         renderHist();
+        showA("✅ Record deleted from all devices", "ok");
       }
 
       function loadEdit(date) {
@@ -2559,7 +2703,6 @@
           const sel = document.getElementById("r-yesterday");
           if (sel) sel.value = date;
           autofillBossCost();
-          // auto generate if cost is available
           const cost = document.getElementById("r-todaycost").value;
           if (cost) genBossReport();
         }, 80);
@@ -2797,35 +2940,34 @@
       }
 
       // ══════════════════════════════════════════════
-      //  GOOGLE SHEETS - PULL (auto-sync on login)
+      //  GOOGLE SHEETS - SYNC
       // ══════════════════════════════════════════════
       async function pullFromSheets(silent) {
         const url = localStorage.getItem("aq_shurl");
-        if (!url) return; // no URL set yet, skip silently
+        if (!url) return;
+
         const banner = document.getElementById("sync-banner");
         if (banner) {
           banner.style.display = "flex";
           banner.textContent = "☁️ Syncing data from cloud…";
         }
+
         try {
           const res = await fetch(url + "?action=getAll");
           const data = await res.json();
-          if (
-            data.status === "ok" &&
-            Array.isArray(data.records) &&
-            data.records.length > 0
-          ) {
-            // Validate dates before accepting — filter out any bad records
+
+          if (data.status === "ok" && Array.isArray(data.records)) {
             const valid = data.records.filter(
               (r) => r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date),
             );
+
             if (valid.length > 0) {
-              // REPLACE local storage with cloud (cloud is the source of truth)
               records = valid;
               records.sort((a, b) => b.date.localeCompare(a.date));
               persist();
               fillDays();
               autofillPrevNet();
+
               if (banner) {
                 banner.textContent =
                   "✅ Synced " + valid.length + " records from cloud";
@@ -2833,20 +2975,20 @@
               }
             } else {
               if (banner) {
-                banner.textContent =
-                  "⚠️ Cloud records had invalid dates — keeping local data";
+                banner.textContent = "⚠️ No valid records in cloud";
                 setTimeout(() => (banner.style.display = "none"), 3000);
               }
             }
           } else {
             if (banner) {
-              setTimeout(() => (banner.style.display = "none"), 2000);
+              banner.textContent = "⚠️ No records in cloud yet";
+              setTimeout(() => (banner.style.display = "none"), 3000);
             }
           }
         } catch (e) {
+          console.error("Sync error:", e);
           if (banner) {
-            banner.textContent =
-              "⚠️ Could not reach cloud — showing local data";
+            banner.textContent = "⚠️ Could not reach cloud - using local data";
             setTimeout(() => (banner.style.display = "none"), 3000);
           }
         }
@@ -2904,6 +3046,7 @@
         let ok = 0,
           fail = 0;
         shMsg("☁️ Syncing 0 / " + records.length + "…", "info");
+
         for (const r of records) {
           try {
             const res = await fetch(url, {
@@ -2921,6 +3064,7 @@
             "info",
           );
         }
+
         shMsg(
           fail === 0
             ? "✅ All " + ok + " records synced!"
@@ -2975,7 +3119,7 @@
       }
 
       // ══════════════════════════════════════════════
-      //  INVENTORY
+      //  INVENTORY WITH PAGINATION AND CLOUD SYNC
       // ══════════════════════════════════════════════
       const INV_KEY = "aq_inv";
       const LOW_ROLLS = 5;
@@ -2988,6 +3132,7 @@
           return [];
         }
       }
+
       function saveInv(data) {
         localStorage.setItem(INV_KEY, JSON.stringify(data));
       }
@@ -3004,11 +3149,12 @@
         return { rolls: Math.max(0, rolls), bags: Math.max(0, bags) };
       }
 
-      function invAddStock() {
+      async function invAddStock() {
         const date = document.getElementById("inv-date").value;
         const item = document.getElementById("inv-item").value;
         const qty = parseInt(document.getElementById("inv-qty").value);
         const note = document.getElementById("inv-note").value.trim();
+
         if (!date) {
           alert("Please select a date.");
           return;
@@ -3017,8 +3163,8 @@
           alert("Please enter a valid quantity.");
           return;
         }
-        const txs = getInv();
-        txs.push({
+
+        const transaction = {
           id: Date.now(),
           date,
           item,
@@ -3026,18 +3172,44 @@
           type: "add",
           note,
           savedAt: new Date().toISOString(),
-        });
+        };
+
+        // Save to cloud first
+        const url = localStorage.getItem("aq_shurl");
+        if (url) {
+          try {
+            const res = await fetch(url + "?action=stock", {
+              method: "POST",
+              body: JSON.stringify(transaction),
+              headers: { "Content-Type": "text/plain" },
+            });
+            const data = await res.json();
+            if (data.status !== "ok") {
+              throw new Error(data.msg || "Failed to save stock to cloud");
+            }
+          } catch (e) {
+            alert("⚠️ Could not save to cloud: " + e.message);
+            return;
+          }
+        }
+
+        // Then save locally
+        const txs = getInv();
+        txs.push(transaction);
         saveInv(txs);
+
         document.getElementById("inv-qty").value = "";
         document.getElementById("inv-note").value = "";
+        stockPage = 1;
         renderInventory();
       }
 
-      function invUseStock() {
+      async function invUseStock() {
         const date = document.getElementById("inv-use-date").value;
         const item = document.getElementById("inv-use-item").value;
         const qty = parseInt(document.getElementById("inv-use-qty").value);
         const note = document.getElementById("inv-use-note").value.trim();
+
         if (!date) {
           alert("Please select a date.");
           return;
@@ -3046,6 +3218,7 @@
           alert("Please enter a valid quantity.");
           return;
         }
+
         const totals = invTotals();
         const avail = item === "rolls" ? totals.rolls : totals.bags;
         if (qty > avail) {
@@ -3058,8 +3231,8 @@
           );
           return;
         }
-        const txs = getInv();
-        txs.push({
+
+        const transaction = {
           id: Date.now(),
           date,
           item,
@@ -3067,18 +3240,87 @@
           type: "use",
           note,
           savedAt: new Date().toISOString(),
-        });
+        };
+
+        // Save to cloud first
+        const url = localStorage.getItem("aq_shurl");
+        if (url) {
+          try {
+            const res = await fetch(url + "?action=stock", {
+              method: "POST",
+              body: JSON.stringify(transaction),
+              headers: { "Content-Type": "text/plain" },
+            });
+            const data = await res.json();
+            if (data.status !== "ok") {
+              throw new Error(data.msg || "Failed to save stock to cloud");
+            }
+          } catch (e) {
+            alert("⚠️ Could not save to cloud: " + e.message);
+            return;
+          }
+        }
+
+        // Then save locally
+        const txs = getInv();
+        txs.push(transaction);
         saveInv(txs);
+
         document.getElementById("inv-use-qty").value = "";
         document.getElementById("inv-use-note").value = "";
+        stockPage = 1;
         renderInventory();
       }
 
-      function invDelete(id) {
+      async function invDelete(id) {
         if (currentRole !== "admin") return;
-        if (!confirm("Delete this transaction?")) return;
+        if (
+          !confirm(
+            "Delete this transaction? This will remove it from ALL devices.",
+          )
+        )
+          return;
+
+        // Delete from cloud
+        const url = localStorage.getItem("aq_shurl");
+        if (url) {
+          try {
+            const res = await fetch(url + "?action=stock&id=" + id, {
+              method: "DELETE",
+            });
+            const data = await res.json();
+            if (data.status !== "ok") {
+              throw new Error(data.msg || "Failed to delete from cloud");
+            }
+          } catch (e) {
+            alert("⚠️ Could not delete from cloud: " + e.message);
+            return;
+          }
+        }
+
+        // Then delete locally
         saveInv(getInv().filter((t) => t.id !== id));
         renderInventory();
+      }
+
+      async function pullStockFromSheets(silent) {
+        const url = localStorage.getItem("aq_shurl");
+        if (!url) return;
+
+        try {
+          const res = await fetch(url + "?action=getStock");
+          const data = await res.json();
+
+          if (data.status === "ok" && Array.isArray(data.stock)) {
+            saveInv(data.stock);
+            if (!silent) {
+              alert("✅ Stock synced from cloud!");
+            }
+            renderInventory();
+          }
+        } catch (e) {
+          console.error("Stock sync error:", e);
+        }
       }
 
       function renderInventory() {
@@ -3095,7 +3337,7 @@
           adminEl.style.display = currentRole === "admin" ? "block" : "none";
 
         const totals = invTotals();
-        const txs = getInv().sort(
+        let txs = getInv().sort(
           (a, b) => b.date.localeCompare(a.date) || b.id - a.id,
         );
 
@@ -3112,6 +3354,7 @@
           bagsEl.style.color =
             totals.bags <= LOW_BAGS ? "var(--red)" : "var(--teal)";
         }
+
         const txCountEl = document.getElementById("inv-tx-count");
         if (txCountEl) txCountEl.textContent = txs.length;
 
@@ -3130,43 +3373,83 @@
           warnEl.style.display = "none";
         }
 
-        // Transaction log
+        // Transaction log with pagination
         const logEl = document.getElementById("inv-log");
         if (!logEl) return;
+
         if (!txs.length) {
           logEl.innerHTML =
             '<div class="empty"><div class="ei">📦</div><p>No transactions yet.</p></div>';
           return;
         }
+
+        const totalPages = Math.ceil(txs.length / STOCK_PER_PAGE);
+        const start = (stockPage - 1) * STOCK_PER_PAGE;
+        const end = start + STOCK_PER_PAGE;
+        const pageTxs = txs.slice(start, end);
+
         const isAdmin = currentRole === "admin";
-        logEl.innerHTML = txs
-          .map((t) => {
-            const isAdd = t.type === "add";
-            const icon = t.item === "rolls" ? "🎞️" : "🛍️";
-            const label = t.item === "rolls" ? "Rolls" : "Packing Bags";
-            const color = isAdd ? "var(--green)" : "var(--blue)";
-            const sign = isAdd ? "+" : "−";
-            const bgCol = isAdd ? "#f0fdf4" : "#eff6ff";
-            const bdCol = isAdd ? "#86efac" : "#93c5fd";
-            return `<div style="display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:10px;background:${bgCol};border:1px solid ${bdCol};margin-bottom:8px">
-      <div style="font-size:22px">${icon}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:700;color:var(--ink)">${isAdd ? "Stock Added" : "Used"} — ${label}</div>
-        <div style="font-size:11px;color:var(--slate);margin-top:2px">${fmtDate(t.date)}${t.note ? " · " + t.note : ""}</div>
-      </div>
-      <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:${color};white-space:nowrap">${sign}${t.qty}</div>
-      ${isAdmin ? `<button onclick="invDelete(${t.id})" style="border:none;background:#fee2e2;color:var(--red);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer">✕</button>` : ""}
+        let html = "";
+
+        pageTxs.forEach((t) => {
+          const isAdd = t.type === "add";
+          const icon = t.item === "rolls" ? "🎞️" : "🛍️";
+          const label = t.item === "rolls" ? "Rolls" : "Packing Bags";
+          const color = isAdd ? "var(--green)" : "var(--blue)";
+          const sign = isAdd ? "+" : "−";
+          const bgCol = isAdd ? "#f0fdf4" : "#eff6ff";
+          const bdCol = isAdd ? "#86efac" : "#93c5fd";
+
+          html += `<div style="display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:10px;background:${bgCol};border:1px solid ${bdCol};margin-bottom:8px">
+        <div style="font-size:22px">${icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--ink)">${isAdd ? "Stock Added" : "Used"} — ${label}</div>
+          <div style="font-size:11px;color:var(--slate);margin-top:2px">${fmtDate(t.date)}${t.note ? " · " + t.note : ""}</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:${color};white-space:nowrap">${sign}${t.qty}</div>
+        ${isAdmin ? `<button onclick="invDelete(${t.id})" style="border:none;background:#fee2e2;color:var(--red);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer">✕</button>` : ""}
+      </div>`;
+        });
+
+        // Add pagination controls
+        if (totalPages > 1) {
+          html += `
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-gray" onclick="changeStockPage(${stockPage - 1})" ${stockPage === 1 ? "disabled" : ""}>← Prev</button>
+      <span style="display:flex;align-items:center;gap:4px;background:var(--card);padding:0 8px;border-radius:8px;border:1px solid var(--line)">`;
+
+          for (let i = 1; i <= totalPages; i++) {
+            if (i === stockPage) {
+              html += `<span style="background:var(--blue);color:#fff;padding:4px 10px;border-radius:6px;font-size:13px;font-weight:600">${i}</span>`;
+            } else {
+              html += `<span onclick="changeStockPage(${i})" style="cursor:pointer;padding:4px 10px;border-radius:6px;font-size:13px;background:var(--bg);color:var(--slate)">${i}</span>`;
+            }
+          }
+
+          html += `</span>
+      <button class="btn btn-sm btn-gray" onclick="changeStockPage(${stockPage + 1})" ${stockPage === totalPages ? "disabled" : ""}>Next →</button>
     </div>`;
-          })
-          .join("");
+        }
+
+        logEl.innerHTML = html;
+      }
+
+      function changeStockPage(newPage) {
+        const txs = getInv();
+        const totalPages = Math.ceil(txs.length / STOCK_PER_PAGE);
+        if (newPage < 1 || newPage > totalPages) return;
+        stockPage = newPage;
+        renderInventory();
       }
 
       function persist() {
         localStorage.setItem("aq_recs", JSON.stringify(records));
       }
+
       function todayStr() {
         return new Date().toISOString().split("T")[0];
       }
+
       function fmtDate(s) {
         try {
           if (!s || typeof s !== "string") return "Unknown Date";
